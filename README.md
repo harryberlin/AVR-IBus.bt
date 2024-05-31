@@ -1,8 +1,8 @@
-# AVR-IBus.A2DP<br>`ESP32 Bluetooth A2DP Extension for AVR-IBus Modul`
+# AVR-IBus.A2DP<br>`BT A2DP Extension for AVR-IBus Modul`
 ## Description
-This is an Extension Board for [AVR-IBus.public](https://github.com/harryberlin/AVR-IBus.public).
-To use the BMW Radio Mode [CD] as Bluetooth Audio Device
-Steps:
+This will get an Extension Board for [AVR-IBus.public](https://github.com/harryberlin/AVR-IBus.public).
+To use the BMW Radio Mode [CD] as Bluetooth Audio Device.
+<br>Steps:
 - design Extension PCB ![5%](https://progress-bar.dev/05)
 - code ESP32 Code for Bluetooth A2DP ![10%](https://progress-bar.dev/10)
 - Side ESP32: code Communication with Atmega2560 ![0%](https://progress-bar.dev/00)
