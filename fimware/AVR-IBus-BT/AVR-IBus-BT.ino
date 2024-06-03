@@ -56,7 +56,9 @@ BluetoothA2DPSinkQueued a2dp_sink(i2s);
 #error Serial Bluetooth not available or not enabled. It is only available for the ESP32 chip.
 #endif
 
-BluetoothSerial SerialBT;
+BluetoothSerial BTSerial;
+#define RXPIN 19         // GPIO 19 => RX for Serial1
+#define TXPIN 18        // GPIO 18 => TX for Serial1
 
 
 const PROGMEM byte FIRST_SETUP = 0;
@@ -66,6 +68,22 @@ void connection_state_changed(esp_a2d_connection_state_t state, void *ptr) {
   Serial.print(state, HEX);
   Serial.print("::");
   Serial.println(a2dp_sink.to_str(state));
+  switch (state) {
+    case 0:
+      Serial.println("Disconnected");
+      break;    
+    case 1:
+      Serial.println("Connecting");
+      break;
+    case 2:
+      Serial.println("Connected");
+      a2dp_sink.pause();
+      Serial1.print("aq\r");
+      a2dp_sink.set_volume(0xFF);
+      break;    
+    default:
+      Serial.printf("Got unknown Connection status %d\n", state);
+  }
 
 }
 
@@ -143,7 +161,4 @@ void a2dp_init() {
 
   a2dp_sink.start(settings_btname_get().c_str());
 
-  delay(50); a2dp_sink.set_volume(0xFF);
-
-  SerialBT.begin(settings_btname_get().c_str());
 }

@@ -22,50 +22,13 @@
 */
 
 void loop() {
-  if (Serial.available()) {
-    switch (Serial.read()) {
-      case 'b':
-        Serial.println(F("CMD:stop"));
-        a2dp_sink.stop();
-        break;
-      case 'n':
-        Serial.println(F("CMD:next"));
-        a2dp_sink.next();
-        break;
-      case 'p':
-        Serial.println(F("CMD:prev"));
-        a2dp_sink.previous();
-        break;
-      case 'r':
-        Serial.println(F("CMD:frwd"));
-        a2dp_sink.rewind();
-        break;
-      case 'f':
-        Serial.println(F("CMD:ffwd"));
-        a2dp_sink.fast_forward();
-        break;
-      case 's':
-        Serial.println(F("CMD:pause"));
-        a2dp_sink.pause();
-        break;
-      case 'm':
-        Serial.println(F("CMD:play"));
-        a2dp_sink.play();
-        break;
-      case 'q':
-        Serial.printf("CMD:state");
-        Serial.printf("\taudio state: %s", a2dp_sink.to_str(a2dp_sink.get_audio_state()));
-        Serial.printf("\tbt state: %s\r", a2dp_sink.to_str(a2dp_sink.get_connection_state()));
-        //Serial.printf("Volume: %s\r", a2dp_sink.get_volume());
-        break;
-      case 'x':
-        settings_reset();
-        break;
-      case 'c':
-        BTMac();
-        break;
-    }
-  }
+  SerialLoop();
 
-  BTSerialLoop();
+  //BTSerialLoop();
+
+  /*
+    if (Serial1.available()) {
+    Serial.write(Serial1.read());
+    }
+  */
 }

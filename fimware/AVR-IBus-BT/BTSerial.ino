@@ -21,12 +21,31 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
+const int BT_READ_BUFFER_SIZE = 64;
+byte bt_read_buffer[BT_READ_BUFFER_SIZE];
+
 void BTSerialLoop() {
-  if (SerialBT.available()) {
-    Serial.print("BT:");
-    Serial.write(SerialBT.read());
+  if (BTSerialRead()) BTSerialHandle((char *) bt_read_buffer);
+}
+
+
+bool BTSerialRead() {
+  static byte index;
+
+  if (BTSerial.available()) {
+    byte c = BTSerial.read();
+    //debug_println("BT receive");
+    if ((c == '\n'||c == '\r'||c == '\t') && index > 0) {       // wenn LF eingelesen und String länger als 0 ist
+      bt_read_buffer[index] = '\0';                             // String terminieren
+      index = 0;
+      return true;                                              // melden dass String fertig eingelesen wurde
+    }
+    else if (c >= 32 && index < BT_READ_BUFFER_SIZE - 1) {      // solange noch Platz im Puffer ist
+      bt_read_buffer[index++] = c;                              // Zeichen abspeichern und Index inkrementieren
+    }
   }
 
+  return false;                                                 // noch nicht fertig
 }
 
 void BTMac() {
@@ -34,9 +53,9 @@ void BTMac() {
   BTAddress mac_obj; // Object holding instance of BTAddress with the MAC (for more details see libraries/BluetoothSerial/src/BTAddress.h)
   String mac_str; // String holding the text version of MAC in format AA:BB:CC:DD:EE:FF
 
-  SerialBT.getBtAddress(mac_arr); // Fill in the array
-  mac_obj = SerialBT.getBtAddressObject(); // Instantiate the object
-  mac_str = SerialBT.getBtAddressString(); // Copy the string
+  BTSerial.getBtAddress(mac_arr); // Fill in the array
+  mac_obj = BTSerial.getBtAddressObject(); // Instantiate the object
+  mac_str = BTSerial.getBtAddressString(); // Copy the string
 
   Serial.print("This device is instantiated with name "); Serial.println(settings_btname_get().c_str());
 
@@ -51,5 +70,9 @@ void BTMac() {
 
   Serial.print("The mac address using string: "); Serial.println(mac_str.c_str());
 
-  SerialBT.println(settings_btname_get());
+  BTSerial.println(settings_btname_get());
+}
+
+void BTSerialHandle(String receivedString) {
+
 }
