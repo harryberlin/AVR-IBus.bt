@@ -31,11 +31,11 @@ void setup() {
   }
 
   //check setup
-  debug_println(EEPROM.read(FIRST_SETUP), HEX);
+  //debug_println(EEPROM.read(FIRST_SETUP), HEX);
   if (EEPROM.read(FIRST_SETUP) != 1) {
     settings_reset();
   }
-  debug_println(EEPROM.read(FIRST_SETUP), HEX);
+  //debug_println(EEPROM.read(FIRST_SETUP), HEX);
 
   a2dp_init();
 

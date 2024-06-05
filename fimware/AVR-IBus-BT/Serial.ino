@@ -30,9 +30,9 @@ void SerialLoop() {
   if (Serial1Read()) SerialHandle((char *) serial1_read_buffer);
 
   /*
-  if (!(millis() % 2000)) {
+    if (!(millis() % 2000)) {
     Serial1.println("ESP32");
-  }
+    }
   */
 }
 
@@ -75,49 +75,58 @@ bool Serial1Read() {
 void SerialHandle(String receivedString) {
 
   switch (receivedString[0]) {
-    case 'a':
+    case 'M':
       switch (receivedString[1]) {
-        case 's': //ab
+        case 'Q':          
+          printPlaybackState();
+          break;
+        case 'S': //Stop
           Serial.println(F("CMD:stop"));
           a2dp_sink.stop();
           break;
-        case 'n': //an
-          Serial.println(F("CMD:next"));
-          a2dp_sink.next();
-          break;
-        case 'p': //ap
-          Serial.println(F("CMD:prev"));
-          a2dp_sink.previous();
-          break;
-        case 'r': //ar
-          Serial.println(F("CMD:frwd"));
-          a2dp_sink.rewind();
-          break;
-        case 'f': //af
-          Serial.println(F("CMD:ffwd"));
-          a2dp_sink.fast_forward();
-          break;
-        case 'h': //ah
+        case 'H': //Pause
           Serial.println(F("CMD:pause"));
           a2dp_sink.pause();
           break;
-        case 'm': //am
+        case 'M': //Play
           Serial.println(F("CMD:play"));
           a2dp_sink.play();
           break;
+        case 'N': //NextTrack
+          Serial.println(F("CMD:next"));
+          setPlaybackState(NEXT);
+          a2dp_sink.next();
+          break;
+        case 'P': //PrevTrack
+          Serial.println(F("CMD:prev"));
+          setPlaybackState(PREV);
+          a2dp_sink.previous();
+          break;
+        case 'R': //FastRewind
+          Serial.println(F("CMD:frwd"));
+          setPlaybackState(FRWD);
+          a2dp_sink.rewind();
+          break;
+        case 'F': //FastForward
+          Serial.println(F("CMD:ffwd"));
+          setPlaybackState(FFWD);
+          a2dp_sink.fast_forward();
+          break;        
       }
-    case 'c':
+      break;
+    case 'C':
       switch (receivedString[1]) {
-        case 's': //cs
-          Serial.printf("CMD:state");
-          Serial.printf("\taudio state: %s", a2dp_sink.to_str(a2dp_sink.get_audio_state()));
-          Serial.printf("\tbt state: %s\r", a2dp_sink.to_str(a2dp_sink.get_connection_state()));
-          //Serial.printf("Volume: %s\r", a2dp_sink.get_volume());
+        case 'Q': //cs
+          Serial.printf("CMD:ConnState");
+          
+          //Serial.printf("Volume: %s\r", a2dp_sink.get_volume() );
+          printConnectionState();
           break;
         case 'm': //cm
           BTMac();
           break;
       }
+      break;
     case 'x':
       settings_reset();
       break;

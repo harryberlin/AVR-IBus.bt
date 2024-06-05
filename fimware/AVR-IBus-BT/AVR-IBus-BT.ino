@@ -22,6 +22,7 @@
 */
 
 #define DEBUG
+//#define ANALOG_OUTPUT //just for simple testing with headphone directly
 
 #ifdef DEBUG    //Macros are usually in all capital lettersIoIf.println(.
 #define debug_print(...)    Serial.print(__VA_ARGS__)     //debug_print is a macro, debug print
@@ -39,13 +40,17 @@
 //#define USE_AUDIO_LOGGING true
 
 #include "AudioTools.h"
-I2SStream i2s;
+#ifdef ANALOG_OUTPUT
+AnalogAudioStream out;
+#else
+I2SStream out;
+#endif
 
 //#include "BluetoothA2DPSink.h"
-//BluetoothA2DPSink a2dp_sink(i2s);
+//BluetoothA2DPSink a2dp_sink(out);
 
 #include "BluetoothA2DPSinkQueued.h"
-BluetoothA2DPSinkQueued a2dp_sink(i2s);
+BluetoothA2DPSinkQueued a2dp_sink(out);
 
 #include "BluetoothSerial.h"
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
@@ -60,105 +65,22 @@ BluetoothSerial BTSerial;
 #define RXPIN 19         // GPIO 19 => RX for Serial1
 #define TXPIN 18        // GPIO 18 => TX for Serial1
 
+uint8_t bt_mac_address[6] = {0,0,0,0,0,0};
 
-const PROGMEM byte FIRST_SETUP = 0;
-
-// for esp_a2d_connection_state_t see https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/bluetooth/esp_a2dp.html#_CPPv426esp_a2d_connection_state_t
-void connection_state_changed(esp_a2d_connection_state_t state, void *ptr) {
-  Serial.print(state, HEX);
-  Serial.print("::");
-  Serial.println(a2dp_sink.to_str(state));
-  switch (state) {
-    case 0:
-      Serial.println("Disconnected");
-      break;    
-    case 1:
-      Serial.println("Connecting");
-      break;
-    case 2:
-      Serial.println("Connected");
-      a2dp_sink.pause();
-      Serial1.print("aq\r");
-      a2dp_sink.set_volume(0xFF);
-      break;    
-    default:
-      Serial.printf("Got unknown Connection status %d\n", state);
-  }
-
-}
-
-// for esp_a2d_audio_state_t see https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/bluetooth/esp_a2dp.html#_CPPv421esp_a2d_audio_state_t
-void audio_state_changed(esp_a2d_audio_state_t state, void *ptr) {
-  Serial.print(state, HEX);
-  Serial.print("::");
-  Serial.println(a2dp_sink.to_str(state));
-}
-
-///TESTTTTTTTT
-void avrc_rn_play_pos_callback(uint32_t play_pos) {
-  Serial.printf("Play position is %d (%d seconds)\n", play_pos, (int)round(play_pos / 1000.0));
-}
-
-void avrc_rn_playstatus_callback(esp_avrc_playback_stat_t playback) {
-  Serial.print(playback, HEX);
-  Serial.print("::");
-  switch (playback) {
-    case esp_avrc_playback_stat_t::ESP_AVRC_PLAYBACK_STOPPED:
-      Serial.println("Stopped.");
-      break;
-    case esp_avrc_playback_stat_t::ESP_AVRC_PLAYBACK_PLAYING:
-      Serial.println("Playing.");
-      break;
-    case esp_avrc_playback_stat_t::ESP_AVRC_PLAYBACK_PAUSED:
-      Serial.println("Paused.");
-      break;
-    case esp_avrc_playback_stat_t::ESP_AVRC_PLAYBACK_FWD_SEEK:
-      Serial.println("Forward seek.");
-      break;
-    case esp_avrc_playback_stat_t::ESP_AVRC_PLAYBACK_REV_SEEK:
-      Serial.println("Reverse seek.");
-      break;
-    case esp_avrc_playback_stat_t::ESP_AVRC_PLAYBACK_ERROR:
-      Serial.println("Error.");
-      break;
-    default:
-      Serial.printf("Got unknown playback status %d\n", playback);
-  }
-}
-
-void avrc_rn_track_change_callback(uint8_t *id) {
-  Serial.println("Track Change bits:");
-  for (uint8_t i = 0; i < 8; i++)
-  {
-    Serial.printf("\tByte %d : 0x%x \n", i, id[i]);
-  }
-  //An example of how to project the pointer value directly as a uint8_t
-  uint8_t track_change_flag = *id;
-  Serial.printf("\tFlag value: %d\n", track_change_flag);
-}
+const PROGMEM uint8_t FIRST_SETUP = 0;
 
 
-///TESTTTTTTTT
+const PROGMEM uint8_t STOP = 0; // MS
+const PROGMEM uint8_t PLAY = 1; // MM
+const PROGMEM uint8_t PREV = 2; // MP
+const PROGMEM uint8_t FRWD = 3; // MR
+const PROGMEM uint8_t FFWD = 4; // MF
+const PROGMEM uint8_t NEXT = 5; // MN
 
-void a2dp_init() {
-  auto cfg = i2s.defaultConfig();
-  cfg.pin_bck = 26;
-  cfg.pin_ws = 25;
-  cfg.pin_data = 22;
-  i2s.begin(cfg);
+uint8_t MusicState = STOP;
 
+// Function Declaration
 
-  a2dp_sink.set_on_connection_state_changed(connection_state_changed);
-  a2dp_sink.set_on_audio_state_changed(audio_state_changed);
-
-
-  a2dp_sink.set_avrc_rn_playstatus_callback(avrc_rn_playstatus_callback);
-  //a2dp_sink.set_avrc_rn_play_pos_callback(avrc_rn_play_pos_callback, 5); //Update the playing position every 5 seconds when Playing
-  //a2dp_sink.set_avrc_rn_track_change_callback(avrc_rn_track_change_callback);
-
-
-  a2dp_sink.set_auto_reconnect(true);
-
-  a2dp_sink.start(settings_btname_get().c_str());
-
-}
+void audio_state_changed(esp_a2d_audio_state_t state, void *ptr);
+void avrc_rn_playstatus_callback(esp_avrc_playback_stat_t playback);
+void connection_state_changed(esp_a2d_connection_state_t state, void *ptr);
