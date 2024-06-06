@@ -58,9 +58,13 @@ void printConnectionState() {
 }
 
 void printMacAddress() {
+  Serial1.print("CA:");
   for (int i = 0; i < 5; i++) {
+    Serial1.print((bt_mac_address)[i], HEX);
+    Serial1.print(":");
     Serial.print((bt_mac_address)[i], HEX);
     Serial.print(":");
   }
+  Serial1.println((bt_mac_address)[5], HEX);
   Serial.println((bt_mac_address)[5], HEX);
 }

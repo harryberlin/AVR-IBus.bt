@@ -122,5 +122,5 @@ void setPlaybackState(uint8_t state){
 
 void printPlaybackState() {
   Serial.printf("M%d\r\n", MusicState );
-  Serial1.printf("M%d\r", MusicState );
+  Serial1.printf("M%d\r\n", MusicState );
 }
