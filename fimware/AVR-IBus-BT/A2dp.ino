@@ -38,8 +38,8 @@ void avrc_rn_play_pos_callback(uint32_t play_pos) {
 void avrc_rn_playstatus_callback(esp_avrc_playback_stat_t playback) {
   //Serial.print(playback, HEX);
   //Serial.print("avrc_rn_playstatus_callback::");
-  //Serial.println(a2dp_sink.to_str(playback));  
-  
+  //Serial.println(a2dp_sink.to_str(playback));
+
   switch (playback) {
     case esp_avrc_playback_stat_t::ESP_AVRC_PLAYBACK_STOPPED:
       Serial.println("Stopped.");
@@ -86,13 +86,13 @@ void avrc_rn_track_change_callback(uint8_t *id) {
 ///TESTTTTTTTT
 
 void a2dp_init() {
-  #ifndef ANALOG_OUTPUT
+#ifndef ANALOG_OUTPUT
   auto cfg = out.defaultConfig();
   cfg.pin_bck = 26;
   cfg.pin_ws = 25;
   cfg.pin_data = 22;
   out.begin(cfg);
-  #endif
+#endif
 
 
   a2dp_sink.set_on_connection_state_changed(connection_state_changed);
@@ -109,13 +109,13 @@ void a2dp_init() {
   a2dp_sink.start(settings_btname_get().c_str());
   a2dp_sink.pause();
 
-  
+
   printPlaybackState();
 
 }
 
 
-void setPlaybackState(uint8_t state){
+void setPlaybackState(uint8_t state) {
   if (state == STOP && MusicState > PLAY) return;
   MusicState = state;
 }

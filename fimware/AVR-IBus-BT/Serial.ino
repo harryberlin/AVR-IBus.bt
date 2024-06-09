@@ -77,7 +77,7 @@ void SerialHandle(String receivedString) {
   switch (receivedString[0]) {
     case 'M':
       switch (receivedString[1]) {
-        case 'Q':          
+        case 'Q':
           printPlaybackState();
           break;
         case 'S': //Stop
@@ -86,6 +86,7 @@ void SerialHandle(String receivedString) {
           break;
         case 'H': //Pause
           Serial.println(F("CMD:pause"));
+          setPlaybackState(STOP);
           a2dp_sink.pause();
           break;
         case 'M': //Play
@@ -111,25 +112,36 @@ void SerialHandle(String receivedString) {
           Serial.println(F("CMD:ffwd"));
           setPlaybackState(FFWD);
           a2dp_sink.fast_forward();
-          break;        
+          break;
       }
       break;
     case 'C':
       switch (receivedString[1]) {
         case 'Q': //cs
           Serial.printf("CMD:ConnState");
-          
+
           //Serial.printf("Volume: %s\r", a2dp_sink.get_volume() );
           printConnectionState();
           break;
-        case 'm': //cm
-          BTMac();
+        case 'N': //CN for Name
+          a2dp_sink.bt_rename(receivedString.substring(3).c_str());
           break;
       }
       break;
-    case 'x':
-      settings_reset();
+    case 'S':
+      switch (receivedString[1]) {
+        case 'R': //cs
+          settings_reset();
+          break;
+        case 'N': //SN:Name
+          settings_btname_set(receivedString.substring(3), true);
+          break;
+        case 'P': //SN:Pin
+          settings_btpin_set(receivedString.substring(3).toInt());
+          break;
+      }
       break;
+
     default:
       Serial.printf("ESP32:UNKNOWN:%s", receivedString);
   }

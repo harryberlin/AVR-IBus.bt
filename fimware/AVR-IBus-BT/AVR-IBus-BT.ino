@@ -22,7 +22,7 @@
 */
 
 #define DEBUG
-//#define ANALOG_OUTPUT //just for simple testing with headphone directly
+#define ANALOG_OUTPUT //just for simple testing with headphone directly
 
 #ifdef DEBUG    //Macros are usually in all capital lettersIoIf.println(.
 #define debug_print(...)    Serial.print(__VA_ARGS__)     //debug_print is a macro, debug print
@@ -65,9 +65,11 @@ BluetoothSerial BTSerial;
 #define RXPIN 19         // GPIO 19 => RX for Serial1
 #define TXPIN 18        // GPIO 18 => TX for Serial1
 
-uint8_t bt_mac_address[6] = {0,0,0,0,0,0};
+uint8_t bt_mac_address[6] = {0, 0, 0, 0, 0, 0};
 
 const PROGMEM uint8_t FIRST_SETUP = 0;
+const PROGMEM uint8_t BT_PIN = 1;
+const PROGMEM uint8_t BT_NAME = 101;
 
 
 const PROGMEM uint8_t STOP = 0; // MS
@@ -84,3 +86,4 @@ uint8_t MusicState = STOP;
 void audio_state_changed(esp_a2d_audio_state_t state, void *ptr);
 void avrc_rn_playstatus_callback(esp_avrc_playback_stat_t playback);
 void connection_state_changed(esp_a2d_connection_state_t state, void *ptr);
+void settings_btname_set(String sentence, boolean commit = false);

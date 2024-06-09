@@ -28,10 +28,20 @@ void settings_reset() {
   Serial.println("Settings Reset Done");
 }
 
-void settings_btname_set(String sentence) {
-  EEPROM.writeString(101, sentence);
+void settings_btname_set(String sentence, boolean commit) {
+  EEPROM.writeString(BT_NAME, sentence);
+  if (commit) EEPROM.commit();
 }
 
 String settings_btname_get() {
-  return EEPROM.readString(101);
+  return EEPROM.readString(BT_NAME);
+}
+
+void settings_btpin_set(uint32_t pin) {
+  if (pin > 99999999) return;
+  EEPROM.writeInt(BT_PIN, pin);
+}
+
+uint32_t settings_btpin_get() {
+  return EEPROM.readInt(BT_PIN);
 }

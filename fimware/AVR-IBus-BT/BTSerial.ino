@@ -35,7 +35,7 @@ bool BTSerialRead() {
   if (BTSerial.available()) {
     byte c = BTSerial.read();
     //debug_println("BT receive");
-    if ((c == '\n'||c == '\r'||c == '\t') && index > 0) {       // wenn LF eingelesen und String länger als 0 ist
+    if ((c == '\n' || c == '\r' || c == '\t') && index > 0) {   // wenn LF eingelesen und String länger als 0 ist
       bt_read_buffer[index] = '\0';                             // String terminieren
       index = 0;
       return true;                                              // melden dass String fertig eingelesen wurde

@@ -23,7 +23,7 @@
 
 // for esp_a2d_connection_state_t see https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/bluetooth/esp_a2dp.html#_CPPv426esp_a2d_connection_state_t
 
-
+#include "esp_gap_bt_api.h"
 void connection_state_changed(esp_a2d_connection_state_t state, void *ptr) {
   //Serial.print(state, HEX);
   //Serial.print("::");
@@ -40,7 +40,7 @@ void connection_state_changed(esp_a2d_connection_state_t state, void *ptr) {
       printMacAddress();
 
       a2dp_sink.set_volume(127);
-      
+
       Serial.print("Connected");
       break;
     default:
@@ -67,4 +67,5 @@ void printMacAddress() {
   }
   Serial1.println((bt_mac_address)[5], HEX);
   Serial.println((bt_mac_address)[5], HEX);
+
 }
