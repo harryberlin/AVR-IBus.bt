@@ -43,6 +43,9 @@ void connection_state_changed(esp_a2d_connection_state_t state, void *ptr) {
 
       Serial.print("Connected");
       break;
+    case 3:
+      Serial.print("Disconnecting");
+      break;
     default:
       Serial.printf("Got unknown Connection status %d\n", state);
   }
@@ -54,18 +57,18 @@ void connection_state_changed(esp_a2d_connection_state_t state, void *ptr) {
 
 void printConnectionState() {
   Serial.printf("C%d\r\n", a2dp_sink.get_connection_state() );
-  Serial1.printf("C%d\r", a2dp_sink.get_connection_state() );
+  AVRIBus.printf("C%d\r", a2dp_sink.get_connection_state() );
 }
 
 void printMacAddress() {
-  Serial1.print("CA:");
+  AVRIBus.print("CA:");
   for (int i = 0; i < 5; i++) {
-    Serial1.print((bt_mac_address)[i], HEX);
-    Serial1.print(":");
+    AVRIBus.print((bt_mac_address)[i], HEX);
+    AVRIBus.print(":");
     Serial.print((bt_mac_address)[i], HEX);
     Serial.print(":");
   }
-  Serial1.println((bt_mac_address)[5], HEX);
+  AVRIBus.println((bt_mac_address)[5], HEX);
   Serial.println((bt_mac_address)[5], HEX);
 
 }

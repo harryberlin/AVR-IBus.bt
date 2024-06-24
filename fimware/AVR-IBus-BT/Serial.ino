@@ -57,8 +57,8 @@ bool SerialRead() {
 bool Serial1Read() {
   static byte index;
 
-  if (Serial1.available()) {
-    byte c = Serial1.read();
+  if (AVRIBus.available()) {
+    byte c = AVRIBus.read();
     //debug_println("BT receive");
     if ((c == '\n' || c == '\r' || c == '\t') && index > 0) {       // wenn LF eingelesen und String länger als 0 ist
       serial1_read_buffer[index] = '\0';                             // String terminieren
@@ -123,9 +123,9 @@ void SerialHandle(String receivedString) {
           //Serial.printf("Volume: %s\r", a2dp_sink.get_volume() );
           printConnectionState();
           break;
-        case 'N': //CN for Name
-          a2dp_sink.bt_rename(receivedString.substring(3).c_str());
-          break;
+        case 'P': //CP
+          Serial.println("CMD:ConnPair");
+          a2dp_sink.confirm_pin_code();
       }
       break;
     case 'S':
@@ -135,15 +135,66 @@ void SerialHandle(String receivedString) {
           break;
         case 'N': //SN:Name
           settings_btname_set(receivedString.substring(3), true);
+          a2dp_sink.end();
+          a2dp_sink.start(settings_btname_get().c_str());
           break;
         case 'P': //SN:Pin
           settings_btpin_set(receivedString.substring(3).toInt());
           break;
       }
       break;
-
+    case 'V':
+      switch (receivedString[1]) {
+        case 'U': //cs
+          //Volume UP
+          break;
+        case 'D': //SN:Name
+          //Volume DOWN
+          break;
+      }
+      break;
+    case 'E':
+      switch (receivedString[1]) {
+        case 'U':
+          cfg_eq.gain_low += 0.1;
+          cfg_eq.gain_medium += 0.1;
+          cfg_eq.gain_high += 0.1;
+          print_eq_state();
+          break;
+        case 'D':
+          cfg_eq.gain_low += -0.1;
+          cfg_eq.gain_medium += -0.1;
+          cfg_eq.gain_high += -0.1;
+          print_eq_state();
+          break;
+        case 'B':
+          if (receivedString[2] == '+') cfg_eq.gain_low += 0.1;
+          else cfg_eq.gain_low += -0.1;
+          print_eq_state();
+          break;
+        case 'T':
+          if (receivedString[2] == '+') cfg_eq.gain_high += 0.1;
+          else cfg_eq.gain_high += -0.1;
+          print_eq_state();
+          break;
+        case 'M':
+          if (Serial.read() == '+') cfg_eq.gain_medium += 0.1;
+          else cfg_eq.gain_medium += -0.1;
+          print_eq_state();
+          break;
+        case 'N':
+          cfg_eq.gain_low = 1.0;
+          cfg_eq.gain_medium = 1.0;
+          cfg_eq.gain_high = 1.0;
+          print_eq_state();
+          break;
+        case 'Q':
+          print_eq_state();
+          break;
+      }
+      break;
     default:
       Serial.printf("ESP32:UNKNOWN:%s", receivedString);
   }
-  //Serial1.println(receivedString);
+  //AVRIBus.println(receivedString);
 }

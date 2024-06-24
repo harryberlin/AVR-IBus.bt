@@ -23,7 +23,7 @@
 
 void setup() {
   Serial.begin(115200);
-  Serial1.begin(115200, SERIAL_8N1, RXPIN, TXPIN); // Rx = 4, Tx = 5 will work for ESP32, S2, S3 and C3
+  AVRIBus.begin(115200, SERIAL_8N1, RXPIN, TXPIN); // Rx = 4, Tx = 5 will work for ESP32, S2, S3 and C3
   //AudioLogger::instance().begin(Serial, AudioLogger::Info);
 
   if (!EEPROM.begin(EEPROM_SIZE)) {

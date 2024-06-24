@@ -27,8 +27,8 @@ void loop() {
   //BTSerialLoop();
 
   /*
-    if (Serial1.available()) {
-    Serial.write(Serial1.read());
+    if (AVRIBus.available()) {
+    Serial.write(AVRIBus.read());
     }
   */
 }

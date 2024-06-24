@@ -22,7 +22,7 @@
 */
 
 #define DEBUG
-#define ANALOG_OUTPUT //just for simple testing with headphone directly
+//#define ANALOG_OUTPUT //just for simple testing with headphone directly
 
 #ifdef DEBUG    //Macros are usually in all capital lettersIoIf.println(.
 #define debug_print(...)    Serial.print(__VA_ARGS__)     //debug_print is a macro, debug print
@@ -40,17 +40,26 @@
 //#define USE_AUDIO_LOGGING true
 
 #include "AudioTools.h"
+
+
 #ifdef ANALOG_OUTPUT
 AnalogAudioStream out;
 #else
 I2SStream out;
 #endif
 
+
+
+Equilizer3Bands eq(out);
+
+ConfigEquilizer3Bands cfg_eq;
+
 //#include "BluetoothA2DPSink.h"
 //BluetoothA2DPSink a2dp_sink(out);
 
 #include "BluetoothA2DPSinkQueued.h"
-BluetoothA2DPSinkQueued a2dp_sink(out);
+BluetoothA2DPSinkQueued a2dp_sink(eq);
+
 
 #include "BluetoothSerial.h"
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
@@ -62,8 +71,10 @@ BluetoothA2DPSinkQueued a2dp_sink(out);
 #endif
 
 BluetoothSerial BTSerial;
-#define RXPIN 19         // GPIO 19 => RX for Serial1
-#define TXPIN 18        // GPIO 18 => TX for Serial1
+
+#define AVRIBus Serial1
+#define RXPIN 35         // GPIO 19 => RX for AVRIBus
+#define TXPIN 33        // GPIO 18 => TX for AVRIBus
 
 uint8_t bt_mac_address[6] = {0, 0, 0, 0, 0, 0};
 

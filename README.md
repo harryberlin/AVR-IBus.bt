@@ -3,10 +3,10 @@
 This will get an Extension Board for [AVR-IBus.public](https://github.com/harryberlin/AVR-IBus.public) Basic Modul.
 To use the BMW Radio Mode [CD] as Bluetooth Audio Device.
 <br>Steps:
-- design Extension PCB ![5%](https://progress-bar.dev/05)
-- code ESP32 Code for Bluetooth A2DP ![35%](https://progress-bar.dev/35)
-- Side ESP32: code Communication with Atmega2560 ![40%](https://progress-bar.dev/40)
-- Side Atmega2560: code Communication with ESP32 ![40%](https://progress-bar.dev/40)
+- design Extension PCB ![100%](https://progress-bar.dev/100)
+- code ESP32 Code for Bluetooth A2DP ![50%](https://progress-bar.dev/50)
+- Side ESP32: code Communication with Atmega2560 ![60%](https://progress-bar.dev/60)
+- Side Atmega2560: code Communication with ESP32 ![60%](https://progress-bar.dev/60)
 
 ## BOM
 - ESP32
@@ -14,7 +14,10 @@ To use the BMW Radio Mode [CD] as Bluetooth Audio Device.
 - ...
 
 ## Wiring
-<img src="docs/connection_schema.png"  border="1" width="250">
+<img src="docs/connection_schema.png"  border="1" width="250"> <img src="docs/connection_schema_new.png"  border="1" width="250">
+
+## PCB
+<img src="docs/pcb_top.jpg"  border="1" width="250"> <img src="docs/pcb_btm.jpg"  border="1" width="250">
 
 ## Commands & States
 <details>

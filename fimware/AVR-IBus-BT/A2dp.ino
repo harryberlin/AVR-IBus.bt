@@ -30,10 +30,12 @@ void audio_state_changed(esp_a2d_audio_state_t state, void *ptr) {
   Serial.println(a2dp_sink.to_str(state));
 }
 
-///TESTTTTTTTT
+
+
 void avrc_rn_play_pos_callback(uint32_t play_pos) {
   Serial.printf("Play position is %d (%d seconds)\n", play_pos, (int)round(play_pos / 1000.0));
 }
+
 
 void avrc_rn_playstatus_callback(esp_avrc_playback_stat_t playback) {
   //Serial.print(playback, HEX);
@@ -71,6 +73,7 @@ void avrc_rn_playstatus_callback(esp_avrc_playback_stat_t playback) {
   printPlaybackState();
 }
 
+
 void avrc_rn_track_change_callback(uint8_t *id) {
   Serial.println("Track Change bits:");
   for (uint8_t i = 0; i < 8; i++)
@@ -83,14 +86,31 @@ void avrc_rn_track_change_callback(uint8_t *id) {
 }
 
 
-///TESTTTTTTTT
+void avrc_metadata_callback(uint8_t id, const uint8_t *text) {
+  Serial.printf("==> AVRC metadata rsp: attribute id 0x%x, %s\n", id, text);
+  if (id == ESP_AVRC_MD_ATTR_PLAYING_TIME) {
+    uint32_t playtime = String((char*)text).toInt();
+    Serial.printf("==> Playing time is %d ms (%d seconds)\n", playtime, (int)round(playtime / 1000.0));
+  }
+}
+
+
+void print_eq_state() {
+  Serial.printf("LOW:%.1f\r\n", cfg_eq.gain_low);
+  Serial.printf("MID:%.1f\r\n", cfg_eq.gain_medium);
+  Serial.printf("HIGH:%.1f\r\n", cfg_eq.gain_high);
+}
+
+
+
+
 
 void a2dp_init() {
 #ifndef ANALOG_OUTPUT
   auto cfg = out.defaultConfig();
-  cfg.pin_bck = 26;
-  cfg.pin_ws = 25;
-  cfg.pin_data = 22;
+  cfg.pin_bck = 32; //26;
+  cfg.pin_ws = 27; //25;
+  cfg.pin_data = 25; //22;
   out.begin(cfg);
 #endif
 
@@ -100,9 +120,24 @@ void a2dp_init() {
 
 
   a2dp_sink.set_avrc_rn_playstatus_callback(avrc_rn_playstatus_callback);
-  //a2dp_sink.set_avrc_rn_play_pos_callback(avrc_rn_play_pos_callback, 5); //Update the playing position every 5 seconds when Playing
-  //a2dp_sink.set_avrc_rn_track_change_callback(avrc_rn_track_change_callback);
+  a2dp_sink.set_avrc_rn_play_pos_callback(avrc_rn_play_pos_callback, 1); //Update the playing position every 5 seconds when Playing
+  a2dp_sink.set_avrc_rn_track_change_callback(avrc_rn_track_change_callback);
 
+  //a2dp_sink.set_avrc_metadata_attribute_mask(ESP_AVRC_MD_ATTR_TITLE | ESP_AVRC_MD_ATTR_ARTIST | ESP_AVRC_MD_ATTR_ALBUM | ESP_AVRC_MD_ATTR_PLAYING_TIME );
+  a2dp_sink.set_avrc_metadata_attribute_mask(ESP_AVRC_MD_ATTR_TITLE | ESP_AVRC_MD_ATTR_ARTIST | ESP_AVRC_MD_ATTR_ALBUM | ESP_AVRC_MD_ATTR_TRACK_NUM | ESP_AVRC_MD_ATTR_NUM_TRACKS | ESP_AVRC_MD_ATTR_GENRE | ESP_AVRC_MD_ATTR_PLAYING_TIME);
+  a2dp_sink.set_avrc_metadata_callback(avrc_metadata_callback);
+
+
+  // setup equilizer
+  cfg_eq = eq.defaultConfig();
+  cfg_eq.setAudioInfo(cfg); // use channels, bits_per_sample and sample_rate from i2s
+  cfg_eq.gain_low = 1.0;
+  cfg_eq.gain_medium = 1.0;
+  cfg_eq.gain_high = 1.0;
+  eq.begin(cfg_eq);
+
+
+  a2dp_sink.activate_pin_code(true);
 
   a2dp_sink.set_auto_reconnect(true);
 
@@ -120,7 +155,8 @@ void setPlaybackState(uint8_t state) {
   MusicState = state;
 }
 
+
 void printPlaybackState() {
   Serial.printf("M%d\r\n", MusicState );
-  Serial1.printf("M%d\r\n", MusicState );
+  AVRIBus.printf("M%d\r\n", MusicState );
 }
