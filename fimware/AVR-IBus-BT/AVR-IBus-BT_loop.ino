@@ -24,7 +24,7 @@
 void loop() {
   SerialLoop();
 
-  //BTSerialLoop();
+  BTSerialLoop();
 
   /*
     if (AVRIBus.available()) {

@@ -117,7 +117,7 @@ void SerialHandle(String receivedString) {
       break;
     case 'C':
       switch (receivedString[1]) {
-        case 'Q': //cs
+        case 'Q': //CQ
           Serial.printf("CMD:ConnState");
 
           //Serial.printf("Volume: %s\r", a2dp_sink.get_volume() );
@@ -128,9 +128,33 @@ void SerialHandle(String receivedString) {
           a2dp_sink.confirm_pin_code();
       }
       break;
+    case 'T':
+      switch (receivedString[1]) {
+        case 'Q': //IQ
+          Serial.printf("CMD:TrackInfo\r\n");          
+          //Serial.printf("TA:%s\r\n", TrackArtist.c_str() );
+          //Serial.printf("TT:%s\r\n", TrackTitle.c_str() );
+          //Serial.printf("TL:%s\r\n", TrackAlbum.c_str() );
+          //Serial.printf("TP:%d\r\n", TrackPosition );
+          //Serial.printf("TS:%d\r\n", TrackTime );
+
+          sprintf(sPrintBuffer, "TA:%s\r\n", TrackArtist.c_str() );
+          SerialBroadcast(sPrintBuffer);
+          sprintf(sPrintBuffer, "TT:%s\r\n", TrackTitle.c_str() );
+          SerialBroadcast(sPrintBuffer);
+          sprintf(sPrintBuffer, "TL:%s\r\n", TrackAlbum.c_str() );
+          SerialBroadcast(sPrintBuffer);
+          sprintf(sPrintBuffer, "TP:%d\r\n", TrackPosition );
+          SerialBroadcast(sPrintBuffer);
+          sprintf(sPrintBuffer, "TS:%d\r\n", TrackTime );
+          SerialBroadcast(sPrintBuffer);
+          break;
+
+      }
+      break;
     case 'S':
       switch (receivedString[1]) {
-        case 'R': //cs
+        case 'R': //SR
           settings_reset();
           break;
         case 'N': //SN:Name
@@ -145,11 +169,13 @@ void SerialHandle(String receivedString) {
       break;
     case 'V':
       switch (receivedString[1]) {
-        case 'U': //cs
+        case 'U': //VU
           //Volume UP
+          a2dp_sink.set_volume(a2dp_sink.get_volume() + 5);
           break;
-        case 'D': //SN:Name
+        case 'D': //VD
           //Volume DOWN
+          a2dp_sink.set_volume(a2dp_sink.get_volume() - 5);
           break;
       }
       break;
@@ -178,7 +204,7 @@ void SerialHandle(String receivedString) {
           print_eq_state();
           break;
         case 'M':
-          if (Serial.read() == '+') cfg_eq.gain_medium += 0.1;
+          if (receivedString[2] == '+') cfg_eq.gain_medium += 0.1;
           else cfg_eq.gain_medium += -0.1;
           print_eq_state();
           break;
@@ -197,4 +223,10 @@ void SerialHandle(String receivedString) {
       Serial.printf("ESP32:UNKNOWN:%s", receivedString);
   }
   //AVRIBus.println(receivedString);
+}
+
+void SerialBroadcast(char* text){
+  Serial.print(text);
+  AVRIBus.print(text);
+  BTSerial.print(text);
 }

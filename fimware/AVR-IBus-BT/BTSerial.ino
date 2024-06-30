@@ -74,5 +74,6 @@ void BTMac() {
 }
 
 void BTSerialHandle(String receivedString) {
-
+  Serial.print("BT:");
+  Serial.println(receivedString);
 }

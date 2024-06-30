@@ -3,10 +3,11 @@
 This will get an Extension Board for [AVR-IBus.public](https://github.com/harryberlin/AVR-IBus.public) Basic Modul.
 To use the BMW Radio Mode [CD] as Bluetooth Audio Device.
 <br>Steps:
-- design Extension PCB ![100%](https://progress-bar.dev/100)
-- code ESP32 Code for Bluetooth A2DP ![50%](https://progress-bar.dev/50)
-- Side ESP32: code Communication with Atmega2560 ![60%](https://progress-bar.dev/60)
-- Side Atmega2560: code Communication with ESP32 ![60%](https://progress-bar.dev/60)
+- ![100%](https://progress-bar.dev/100) design Extension PCB 
+- ![50%](https://progress-bar.dev/50) code ESP32 Code for Bluetooth A2DP
+- ![60%](https://progress-bar.dev/60) Side ESP32: code Communication with Atmega2560
+- ![60%](https://progress-bar.dev/60) Side Atmega2560: code Communication with ESP32
+- ![01%](https://progress-bar.dev/01) Code cleanup
 
 ## BOM
 - ESP32
@@ -26,6 +27,7 @@ To use the BMW Radio Mode [CD] as Bluetooth Audio Device.
 | Command    | Description                 |
 | ---------- | --------------------------- |
 | `CQ`       | Connection state Request    |
+| `CP`       | Confirm Paring Pin          |
 |            |                             |
 | `MQ`       | Music state Request         |
 | `MS`       | Music Stop                  |
@@ -37,20 +39,50 @@ To use the BMW Radio Mode [CD] as Bluetooth Audio Device.
 | `MN`       | Music Next Track            |
 | `MQ`       | Music sate request          |
 | `MQ`       | Music sate request          |
+|            |                             |
+| `TQ`       | Track Meta Data Request     |
+|            |                             |
+| `VU`       | BT Device Volume UP         |
+| `VD`       | BT Device Volume DOWN       |
+|            |                             |
+| `EQ`       | 3Band EQ Requests           |
+| `EU`       | Gain all Bands Up           |
+| `ED`       | Gain all Bands Down         |
+| `EB+`      | Gain Bass Up                |
+| `EB-`      | Gain Bass Down              |
+| `EM+`      | Gain Mid Up                 |
+| `EM-`      | Gain Mid Down               |
+| `ET+`      | Gain Treble Up              |
+| `ET-`      | Gain Treble Down            |
+| `EN`       | Gain Reset all Bands to 1.0 |
+|            |                             |
+| `SR`       | Settings Reseet             |
+| `SN:MyName`| Set BT Device Name to `MyName`|
 
 | States     | Description                 |
 | ---------- | --------------------------- |
 | `C0`       | Disconnected                |
 | `C1`       | Connecting                  |
 | `C2`       | Connected                   |
-| `CA`       | Returns connected Mac-Address <br>`example CA:11:22:33:44:55:66`|
+| `CA`       | Returns connected Sender<br>MAC-Address<br>`example CA:11:22:33:44:55:66`|
 |            |                             |
 | `M0`       | Music is stopped  or paused |
 | `M1`       | Music is playing            |
-| `M2`       | Music skips prev Track or back |
+| `M2`       | Music skips back or prev Track |
 | `M3`       | Music fast rewind Track     |
 | `M4`       | Music fast forward Track    |
 | `M5`       | Music skips next Track      |
+|            |                             |
+| `TA`       | Track Artist                |
+| `TT`       | Track Title                 |
+| `TL`       | Track Album                 |
+| `TP`       | Track Position (in seconds) |
+| `TA`       | Track Length (in seconds)   |
+|            |                             |
+| `EL`       | Gain Bass Level<br>`example EL:1.1`|
+| `EM`       | Gain Mid Level<br>`example EM:1.1`|
+| `EH`       | Gain Treble Level<br>`example EH:1.1`|
+
 
 </details>
 

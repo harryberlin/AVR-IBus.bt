@@ -56,11 +56,14 @@ void connection_state_changed(esp_a2d_connection_state_t state, void *ptr) {
 
 
 void printConnectionState() {
-  Serial.printf("C%d\r\n", a2dp_sink.get_connection_state() );
-  AVRIBus.printf("C%d\r", a2dp_sink.get_connection_state() );
+  //Serial.printf("C%d\r\n", a2dp_sink.get_connection_state() );
+  //AVRIBus.printf("C%d\r", a2dp_sink.get_connection_state() );
+  sprintf(sPrintBuffer, "C%d\r\n", a2dp_sink.get_connection_state() );
+  SerialBroadcast(sPrintBuffer);
 }
 
 void printMacAddress() {
+  /*
   AVRIBus.print("CA:");
   for (int i = 0; i < 5; i++) {
     AVRIBus.print((bt_mac_address)[i], HEX);
@@ -70,5 +73,7 @@ void printMacAddress() {
   }
   AVRIBus.println((bt_mac_address)[5], HEX);
   Serial.println((bt_mac_address)[5], HEX);
-
+  */
+  sprintf(sPrintBuffer, "CA:%02X:%02X:%02X:%02X:%02X:%02X\r\n", (bt_mac_address)[0], (bt_mac_address)[1], (bt_mac_address)[2], (bt_mac_address)[3], (bt_mac_address)[4], (bt_mac_address)[5] );
+  SerialBroadcast(sPrintBuffer);
 }

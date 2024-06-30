@@ -76,6 +76,8 @@ BluetoothSerial BTSerial;
 #define RXPIN 35         // GPIO 19 => RX for AVRIBus
 #define TXPIN 33        // GPIO 18 => TX for AVRIBus
 
+char sPrintBuffer[60];
+
 uint8_t bt_mac_address[6] = {0, 0, 0, 0, 0, 0};
 
 const PROGMEM uint8_t FIRST_SETUP = 0;
@@ -91,6 +93,13 @@ const PROGMEM uint8_t FFWD = 4; // MF
 const PROGMEM uint8_t NEXT = 5; // MN
 
 uint8_t MusicState = STOP;
+
+String TrackTitle = "";
+String TrackArtist = "";
+String TrackAlbum = "";
+int TrackPosition = -1;
+int TrackTime = -1;
+
 
 // Function Declaration
 

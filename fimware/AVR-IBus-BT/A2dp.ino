@@ -33,7 +33,11 @@ void audio_state_changed(esp_a2d_audio_state_t state, void *ptr) {
 
 
 void avrc_rn_play_pos_callback(uint32_t play_pos) {
-  Serial.printf("Play position is %d (%d seconds)\n", play_pos, (int)round(play_pos / 1000.0));
+  //Serial.printf("Play position is %d (%d seconds)\n", play_pos, (int)round(play_pos / 1000.0));
+  TrackPosition = play_pos / 1000;
+  //Serial.printf("TP:%d\r\n", TrackPosition );
+  sprintf(sPrintBuffer, "TP:%d\r\n", TrackPosition );
+  SerialBroadcast(sPrintBuffer);
 }
 
 
@@ -88,17 +92,43 @@ void avrc_rn_track_change_callback(uint8_t *id) {
 
 void avrc_metadata_callback(uint8_t id, const uint8_t *text) {
   Serial.printf("==> AVRC metadata rsp: attribute id 0x%x, %s\n", id, text);
-  if (id == ESP_AVRC_MD_ATTR_PLAYING_TIME) {
-    uint32_t playtime = String((char*)text).toInt();
-    Serial.printf("==> Playing time is %d ms (%d seconds)\n", playtime, (int)round(playtime / 1000.0));
+  switch (id) {
+    case ESP_AVRC_MD_ATTR_PLAYING_TIME: {
+        uint32_t playtime = String((char*)text).toInt();
+        Serial.printf("==> Playing time is %d ms (%d seconds)\n", playtime, (int)round(playtime / 1000.0));
+        TrackTime = playtime / 1000;
+      }
+      break;
+    case ESP_AVRC_MD_ATTR_ARTIST: {
+        TrackArtist = String((char*)text);
+        //Serial.printf("TA:%s\r\n", TrackArtist );
+      }
+      break;
+    case ESP_AVRC_MD_ATTR_TITLE: {
+        TrackTitle = String((char*)text);
+        //Serial.printf("TT:%s\r\n", TrackTitle );
+      }
+      break;
+
+    case ESP_AVRC_MD_ATTR_ALBUM: {
+        TrackAlbum = String((char*)text);
+        //Serial.printf("TL:%s\r\n", TrackAlbum );
+      }
+      break;
   }
 }
 
-
 void print_eq_state() {
-  Serial.printf("LOW:%.1f\r\n", cfg_eq.gain_low);
-  Serial.printf("MID:%.1f\r\n", cfg_eq.gain_medium);
-  Serial.printf("HIGH:%.1f\r\n", cfg_eq.gain_high);
+  //Serial.printf("EL:%.1f\r\n", cfg_eq.gain_low);
+  //Serial.printf("EM:%.1f\r\n", cfg_eq.gain_medium);
+  //Serial.printf("EH:%.1f\r\n", cfg_eq.gain_high);
+    
+  sprintf(sPrintBuffer, "EL:%.1f\r\n", cfg_eq.gain_low );
+  SerialBroadcast(sPrintBuffer);
+  sprintf(sPrintBuffer, "EM:%.1f\r\n", cfg_eq.gain_medium );
+  SerialBroadcast(sPrintBuffer);
+  sprintf(sPrintBuffer, "EH:%.1f\r\n", cfg_eq.gain_high );
+  SerialBroadcast(sPrintBuffer);
 }
 
 
@@ -157,6 +187,9 @@ void setPlaybackState(uint8_t state) {
 
 
 void printPlaybackState() {
-  Serial.printf("M%d\r\n", MusicState );
-  AVRIBus.printf("M%d\r\n", MusicState );
+  //Serial.printf("M%d\r\n", MusicState );
+  //AVRIBus.printf("M%d\r\n", MusicState );
+  
+  sprintf(sPrintBuffer, "M%d\r\n", MusicState );
+  SerialBroadcast(sPrintBuffer);
 }
